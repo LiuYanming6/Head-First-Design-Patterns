@@ -1,5 +1,5 @@
 package headfirst.designpatterns.command.simpleremoteWL;
 
 public interface Command {
-	void execute();
+    void execute();
 }
