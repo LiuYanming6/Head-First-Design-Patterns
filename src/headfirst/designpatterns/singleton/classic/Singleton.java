@@ -1,7 +1,9 @@
 package headfirst.designpatterns.singleton.classic;
 
-// NOTE: This is not thread safe!
-
+/* NOTE: This is not thread safe!
+ 懒汉式, 延时创建
+ 不要用这个方式
+ */
 public class Singleton {
     private static Singleton uniqueInstance;
 
@@ -10,6 +12,7 @@ public class Singleton {
 
     public static Singleton getInstance() {
         if (uniqueInstance == null) {
+            // 两个线程可能同事跑到这里, 所以线程不安全
             uniqueInstance = new Singleton();
         }
         return uniqueInstance;
