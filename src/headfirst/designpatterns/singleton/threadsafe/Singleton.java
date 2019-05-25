@@ -1,14 +1,23 @@
 package headfirst.designpatterns.singleton.threadsafe;
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
 /*
 lazy load, 同步操作降低效率
+
+这里实现序列化只是为了测试 序列化和反序列话可以访问私有构造函数而破坏单例.
  */
-public class Singleton {
+public class Singleton implements Serializable{
     private static Singleton uniqueInstance;
 
     // other useful instance variables here
 
     private Singleton() {
+        //反射问题解决: 只能抛出异常,禁止创建实例
+        if (uniqueInstance != null) {
+            throw new RuntimeException("禁止使用构造函数, 请使用getInstance()");
+        }
     }
 
     public static synchronized Singleton getInstance() {
@@ -22,45 +31,10 @@ public class Singleton {
     public String getDescription() {
         return "I'm a thread safe Singleton!";
     }
-}
 
-/*
-在一些开源框架中看到这种方式, 本书没有结束
-
-懒加载, 高效, 线程安全
-
-外部类灭有static属性,则不会立即加载对象.
-只用调用 get, 才会加载静态内部类
- */
-class Singleton2 {
-    private static class SingletonClassInstance{
-        private static final Singleton2 uniqueInstance = new Singleton2();
-    }
-
-    // other useful instance variables here
-
-    private Singleton2() {
-    }
-
-    public static Singleton2 getInstance() {
-        return SingletonClassInstance.uniqueInstance;
-    }
-
-    // other useful methods here
-    public String getDescription() {
-        return "I'm a thread safe and lazy load Singleton!";
+    //序列化问题解决: 反序列话会自动调用这个方法
+    private Object readResolve() throws ObjectStreamException{
+        return uniqueInstance;
     }
 }
 
-/*
-实现简单
-枚举本身就是单例模式,由JVM从根本上提供保障,避免通过反射和反序列化的漏洞
-无延时加载
- */
-enum Singleton3{
-    INSTANCE;
-
-    public String getDescription() {
-        return "I'm a enum Singleton!";
-    }
-}
